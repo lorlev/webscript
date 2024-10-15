@@ -1,0 +1,10 @@
+{web_server_dir}/{domain}/server.logs/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        size {file_size}
+        create 775 nginx sftpusers
+}

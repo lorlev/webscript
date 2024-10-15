@@ -1,0 +1,4 @@
+#Site Maintenance Access list
+
+default				off; #All Lusers
+"127.0.0.1"			off;

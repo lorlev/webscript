@@ -1,0 +1,19 @@
+[Unit]
+Description={service_title} Gunicorn Service
+After=network.target
+
+[Service]
+User={user}
+Group={group}
+WorkingDirectory={web_server_dir}/{domain}/htdocs
+Environment="PATH={web_server_dir}/{domain}/htdocs/bin"
+ExecStart={web_server_dir}/{domain}/htdocs/bin/gunicorn --reload --reload-engine=poll --bind 127.0.0.1:{gunicorn_port} -w 1 websocket:app --worker-class=eventlet --error-logfile {web_server_dir}/{domain}/server.logs/gunicorn.output.log  --capture-output
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+StandardOutput=file:{web_server_dir}/{domain}/server.logs/gunicorn.output.log
+
+[Install]
+WantedBy=multi-user.target
