@@ -9,9 +9,9 @@ CreateLogs(){
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/php.slow.log"
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/php.access.log"
 
-	chown nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/server.logs/php.error.log"
-	chown nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/server.logs/php.slow.log"
-	chown nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/server.logs/php.access.log"
+	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/php.error.log"
+	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/php.slow.log"
+	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/php.access.log"
 
 	chmod -R 775 "$web_server_dir/$DOMAIN_NAME/server.logs"
 }
@@ -20,20 +20,20 @@ CreateDirs(){
 	echo
 	echo "<- Create php session directory"
 
-	chown nginx:sftpusers "/var/lib/php/session"
+	chown www-data:$global_group "/var/lib/php/session"
 	mkdir "/var/lib/php/session/$DOMAIN_NAME"
 	chmod 770 "/var/lib/php/session/$DOMAIN_NAME"
-	chown nginx:sftpusers "/var/lib/php/session/$DOMAIN_NAME"
+	chown www-data:$global_group "/var/lib/php/session/$DOMAIN_NAME"
 
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 
 	echo
 	echo "<- Create php wsdlcache directory"
 
-	chown nginx:sftpusers "/var/lib/php/wsdlcache"
+	chown www-data:$global_group "/var/lib/php/wsdlcache"
 	mkdir "/var/lib/php/wsdlcache/$DOMAIN_NAME"
 	chmod 770 "/var/lib/php/wsdlcache/$DOMAIN_NAME"
-	chown nginx:sftpusers "/var/lib/php/wsdlcache/$DOMAIN_NAME"
+	chown www-data:$global_group "/var/lib/php/wsdlcache/$DOMAIN_NAME"
 
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 }

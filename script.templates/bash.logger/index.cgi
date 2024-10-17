@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 printf "Content-Type: text/html"
 echo
@@ -10,6 +10,13 @@ echo
 #Web Params
 SCRIPT=$(readlink -f "$0")
 ROOT=$(dirname "$SCRIPT")
+
+if [ "${HTTP_CLOUDFRONT_FORWARDED_PROTO}" = "https" ]; then
+	export REQUEST_SCHEME="https"
+else
+	export REQUEST_SCHEME="http"
+fi
+
 URL="$REQUEST_SCHEME://$SERVER_NAME/log.viewer"
 
 GET=$(echo "${QUERY_STRING//$'url=log.viewer/'}")

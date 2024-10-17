@@ -36,6 +36,7 @@ EOF
 NGINX_TECH_LOCATION=$(cat <<EOF
 
 	location ~ \.php\$ {
+		include                   snippets/fastcgi-php.conf;
 		if (\$$DOMAIN_NAME.maintenance = on) {
 			return                    503;
 		}

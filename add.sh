@@ -256,7 +256,7 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 	echo
 fi
 
-chown -R $USER_NAME:sftpusers "$web_server_dir/$DOMAIN_NAME/htdocs"
+chown -R $USER_NAME:$global_group "$web_server_dir/$DOMAIN_NAME/htdocs"
 
 if [ "$IS_SSL" == "Y" -o "$IS_SSL" == "y" ]; then
 	if [ ! -d "$certificate_location" ]; then

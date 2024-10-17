@@ -15,8 +15,8 @@ CreateLogs(){
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/pip.install.output.log"
 
 	chmod 775 "$web_server_dir/$DOMAIN_NAME/server.logs/gunicorn.output.log"
-	chown nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/server.logs/gunicorn.output.log"
-	chown nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/server.logs/pip.install.output.log"
+	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/gunicorn.output.log"
+	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/pip.install.output.log"
 }
 
 CreateDirs(){
@@ -26,7 +26,7 @@ CreateDirs(){
 	mkdir "$web_server_dir/$DOMAIN_NAME/.pip"
 	mkdir "$web_server_dir/$DOMAIN_NAME/.pip/cache"
 
-	chown -R nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/.pip"
+	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/.pip"
 
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 }

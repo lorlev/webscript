@@ -2,7 +2,7 @@
 
 CreateUser(){
 	echo "<- Add user: $USER_NAME"
-	useradd -g sftpusers -s /sbin/nologin -d "$web_server_dir/$DOMAIN_NAME" "$USER_NAME"
+	useradd -m -g $global_group -s /sbin/nologin -d "$web_server_dir/$DOMAIN_NAME" "$USER_NAME"
 
 	# Does User exist?
 	id $USER_NAME &> /dev/null
@@ -22,7 +22,7 @@ CreateUser(){
 }
 
 PrepeareUserDirs(){
-	chown root:sftpusers "$web_server_dir/$DOMAIN_NAME"
+	chown root:$global_group "$web_server_dir/$DOMAIN_NAME"
 	chmod 755 "$web_server_dir/$DOMAIN_NAME"
 
 	rm "$web_server_dir/$DOMAIN_NAME/.bash_logout" -f
@@ -58,7 +58,7 @@ CreateLogRotate(){
 		echo -e "\n#web sites log files\ninclude $logrotate_site_config_dir" >> $logrotate_config_file
 	fi
 
-	sed "s/{domain}/$DOMAIN_NAME/g; s/{file_size}/$logrotate_file_size/g; s|{web_server_dir}|$web_server_dir|g" "$local_path/config.templates/logrotate.default" > "$logrotate_site_config_dir/$DOMAIN_NAME"
+	sed "s/{domain}/$DOMAIN_NAME/g; s/{file_size}/$logrotate_file_size/g; s|{web_server_dir}|$web_server_dir|g; s|{group}|$global_group|g" "$local_path/config.templates/logrotate.default" > "$logrotate_site_config_dir/$DOMAIN_NAME"
 
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 }
@@ -77,7 +77,7 @@ CreateAutoDeploy(){
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 
 	chmod -R 750 "$web_server_dir/$DOMAIN_NAME/auto.deploy"
-	chown -R nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/auto.deploy"
+	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/auto.deploy"
 
 	chmod 400 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access-key"
 	chmod 775 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access-key.pub"
@@ -102,7 +102,7 @@ CreateErrorPages(){
 	sed "s/{domain}/$DOMAIN_NAME/g; " "$local_path/error.page.templates/50x.html" > "$web_server_dir/$DOMAIN_NAME/error.pages/50x.html"
 	sed "s/{domain}/$DOMAIN_NAME/g; " "$local_path/error.page.templates/maintenance.html" > "$web_server_dir/$DOMAIN_NAME/error.pages/maintenance.html"
 
-	chown -R $USER_NAME:sftpusers "$web_server_dir/$DOMAIN_NAME/error.pages"
+	chown -R $USER_NAME:$global_group "$web_server_dir/$DOMAIN_NAME/error.pages"
 }
 
 GenerateSelfSignedSSL(){
@@ -185,7 +185,7 @@ AddBashLogger(){
 
 	cp "$local_path/script.templates/bash.logger" "$web_server_dir/$DOMAIN_NAME/log.viewer" -r
 	chmod -R 775 "$web_server_dir/$DOMAIN_NAME/log.viewer"
-	chown -R nginx:sftpusers "$web_server_dir/$DOMAIN_NAME/log.viewer"
+	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/log.viewer"
 
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 }

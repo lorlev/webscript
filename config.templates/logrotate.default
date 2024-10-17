@@ -6,5 +6,5 @@
         delaycompress
         notifempty
         size {file_size}
-        create 775 nginx sftpusers
+        create 775 www-data {group}
 }

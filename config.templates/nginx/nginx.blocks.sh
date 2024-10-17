@@ -147,7 +147,7 @@ if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 			include                   fastcgi_params;
 
 			fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-			fastcgi_pass              unix:/var/run/fcgiwrap-fcgi.sock;
+			fastcgi_pass              unix:/var/run/fcgiwrap.socket;
 		}
 	}\n
 
@@ -181,7 +181,7 @@ if [ "$bash_logger" == "Y" -o "$bash_logger" == "y" ]; then
 			include                   fastcgi_params;
 
 			fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-			fastcgi_pass              unix:/var/run/fcgiwrap-fcgi.sock;
+			fastcgi_pass              unix:/var/run/fcgiwrap.socket;
 		}
 	}\n
 
