@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "<div class='file-list'>"
 echo "<div style='padding: 20px;'>"

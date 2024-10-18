@@ -212,7 +212,12 @@ NginxAccessStructure(){
 			rm "/etc/nginx/access/bitbucket.access.conf"
 		fi
 
+		if [ -f "/etc/nginx/access/gitlab.access.conf" ]; then
+			rm "/etc/nginx/access/gitlab.access.conf"
+		fi
+
 		cp "$local_path/config.templates/nginx/access/bitbucket.access.conf" "/etc/nginx/access/bitbucket.access.conf"
+		cp "$local_path/config.templates/nginx/access/gitlab.access.conf" "/etc/nginx/access/gitlab.access.conf"
 	fi
 
 	#Domain Access

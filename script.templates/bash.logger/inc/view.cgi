@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd "../${logDirs[$LOG_FILE_DIR]}"
 
