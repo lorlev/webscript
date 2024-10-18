@@ -67,10 +67,20 @@ CreateAutoDeploy(){
 	echo
 	echo "<- Create Auto Deploy";
 
-	mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy"
-	ssh-keygen -t rsa -f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access-key" -N "" > /dev/null 2>&1
+	git clone https://github.com/lorlev/ad2.git "$web_server_dir/$DOMAIN_NAME/auto.deploy"
 
-	sed "s/{push}/$PUSH/g; s/{push_secret}/$push_secret/g; s|{push_url}|$push_url|g" "$local_path/script.templates/auto.deploy/index.cgi" > "$web_server_dir/$DOMAIN_NAME/auto.deploy/index.cgi"
+	cp "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env.example" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	## Clear spaces, tabs, empty lines & comments in config file
+	export $(sed "s/ *= */=/g; s/	//g; s/[#].*$//; /^$/d;" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env")
+
+	sed -i "s/PUSH[[:space:]]*=.*/PUSH\t\t\t= \"$PUSH\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= \"$push_url\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= \"$push_secret\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+
+	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+
+	ssh-keygen -t rsa -f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" -N "" > /dev/null 2>&1
 
 	CreateExecutionScript
 
@@ -79,8 +89,8 @@ CreateAutoDeploy(){
 	chmod -R 750 "$web_server_dir/$DOMAIN_NAME/auto.deploy"
 	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/auto.deploy"
 
-	chmod 400 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access-key"
-	chmod 775 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access-key.pub"
+	chmod 400 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key"
+	chmod 775 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key.pub"
 	chmod 700 "$web_server_dir/$DOMAIN_NAME/auto.deploy/index.cgi"
 }
 
@@ -183,7 +193,8 @@ AddBashLogger(){
 	echo
 	echo "<- Create Bash logger"
 
-	cp "$local_path/script.templates/bash.logger" "$web_server_dir/$DOMAIN_NAME/log.viewer" -r
+	git clone https://github.com/lorlev/bash.logger.git "$web_server_dir/$DOMAIN_NAME/log.viewer"
+
 	chmod -R 775 "$web_server_dir/$DOMAIN_NAME/log.viewer"
 	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/log.viewer"
 

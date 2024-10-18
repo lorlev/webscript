@@ -61,7 +61,8 @@ CreateDirs(){
 }
 
 CreateExecutionScript(){
-	sed "s/{composer}/$COMPOSER/g;" "$local_path/script.templates/auto.deploy/tech/$TECHNOLOGY.cgi" > "$web_server_dir/$DOMAIN_NAME/auto.deploy/execute.cgi"
+	sed -i "s/COMPOSER[[:space:]]*=.*/COMPOSER\t\t= \"$COMPOSER\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	sed -i "s/TECH[[:space:]]*=.*/TECH\t\t\t= \"$TECHNOLOGY\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 }
 
 CreateConfig(){

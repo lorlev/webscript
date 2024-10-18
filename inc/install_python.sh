@@ -32,8 +32,8 @@ CreateDirs(){
 }
 
 CreateExecutionScript(){
-	GUNICORN='Y'
-	sed "s/{gunicorn}/$GUNICORN/g;" "$local_path/script.templates/auto.deploy/tech/$TECHNOLOGY.cgi" > "$web_server_dir/$DOMAIN_NAME/auto.deploy/execute.cgi"
+	sed -i "s/GUNICORN[[:space:]]*=.*/GUNICORN\t\t= \"$GUNICORN\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	sed -i "s/TECH[[:space:]]*=.*/TECH\t\t\t= \"$TECHNOLOGY\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 }
 
 CreateConfig(){

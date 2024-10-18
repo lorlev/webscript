@@ -222,7 +222,7 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 	echo "<- Clone Git Repository"
 
 	echo
-	echo "Access Key is:$(tput setaf 2) $(cat $web_server_dir/$DOMAIN_NAME/auto.deploy/access-key.pub)$(tput sgr 0)"
+	echo "Access Key is:$(tput setaf 2) $(cat $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key.pub)$(tput sgr 0)"
 	echo
 
 	read -e -p "Begin Repository Clone? (Y/n) (default n): " REPOSITORY_CLONE
@@ -236,7 +236,7 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 			CHECKOUT_BRANCH='y'
 		fi
 
-		ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access-key; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/htdocs"
+		ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/htdocs"
 
 		cd "$web_server_dir/$DOMAIN_NAME/htdocs"
 
@@ -308,7 +308,7 @@ GetServiceSummary
 
 if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 	echo "-> Auto Deploy URL is: $DOMAIN_NAME/auto.deploy"
-	echo "-> Access Key is: $(cat $web_server_dir/$DOMAIN_NAME/auto.deploy/access-key.pub)"
+	echo "-> Access Key is: $(cat $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key.pub)"
 fi
 
 echo " $(tput sgr 0)"
