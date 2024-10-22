@@ -31,6 +31,8 @@ fi
 source "$local_path/tmp/local_config.ini"
 source "$local_path/inc/functions.sh"
 
+SelfUpdate
+
 trap Finish 2
 
 echo

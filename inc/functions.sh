@@ -1,5 +1,31 @@
 #!/bin/sh
 
+SelfUpdate(){
+	echo 'Checking for a New Version (Update Check)'
+	cd "$local_path" || { echo "Failed to change directory to $local_path"; exit 1; }
+
+	git remote update > /dev/null 2>&1
+
+	UPSTREAM=${1:-'@{u}'}
+	LOCAL=$(git rev-parse '@{0}')
+	REMOTE=$(git rev-parse "$UPSTREAM")
+	BASE=$(git merge-base '@{0}' "$UPSTREAM")
+
+	if [ "$LOCAL" = "$REMOTE" ]; then
+		echo "Up-to-date"
+	elif [ "$LOCAL" = "$BASE" ]; then
+		echo "New version available. Attempting to update..."
+		git pull
+		echo "Update completed. Restarting required."
+		exit 0
+	elif [ "$REMOTE" = "$BASE" ]; then
+		echo "Local version has uncommitted changes!"
+	else
+		echo "Branches have diverged. Manual intervention needed."
+	fi
+	echo
+}
+
 CreateUser(){
 	echo "<- Add user: $USER_NAME"
 	useradd -m -g $global_group -s /usr/sbin/nologin -d "$web_server_dir/$DOMAIN_NAME" "$USER_NAME"
