@@ -249,7 +249,13 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 			git config core.filemode false
 
 			if [ "$CHECKOUT_BRANCH" == "Y" -o "$CHECKOUT_BRANCH" == "y" ]; then
-				git checkout -b $GIT_BRANCH "origin/$GIT_BRANCH"
+				echo "<- Switched to a new branch: $GIT_BRANCH"
+
+				if git checkout -b $GIT_BRANCH "origin/$GIT_BRANCH" > /dev/null 2>&1; then
+					echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+				else
+					echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
+				fi
 			fi
 
 			ExecuteScript

@@ -41,7 +41,6 @@ NGINX_TECH_LOCATION=$(cat <<EOF
 			return                    503;
 		}
 
-		fastcgi_index             index.php;
 		fastcgi_pass              unix:/run/php/php-fpm-${USER_NAME}.sock;
 		fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
 		include                   fastcgi_params;
