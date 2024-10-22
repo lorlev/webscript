@@ -1,6 +1,7 @@
 #!/bin/sh
 
 SelfUpdate(){
+	echo
 	echo 'Checking for a New Version (Update Check)'
 	cd "$local_path" || { echo "Failed to change directory to $local_path"; exit 1; }
 
@@ -23,7 +24,6 @@ SelfUpdate(){
 	else
 		echo "Branches have diverged. Manual intervention needed."
 	fi
-	echo
 }
 
 CreateUser(){
