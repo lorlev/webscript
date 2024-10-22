@@ -44,7 +44,9 @@ echo "(1) Nginx + PHP-FPM"
 echo "(2) Nginx + Python + Gunicorn"
 echo "(3) Nginx + PHP-FPM + React"
 
-read -e -p "(Q) Quit? " CHOOSE_TECHNOLOGY
+read -e -p "(Q) Quit? (Default: 1) " CHOOSE_TECHNOLOGY
+CHOOSE_TECHNOLOGY=${CHOOSE_TECHNOLOGY:-1}
+
 case "$CHOOSE_TECHNOLOGY" in
 	"1") TECHNOLOGY="php";;
 	"2") TECHNOLOGY="python";;
