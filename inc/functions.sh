@@ -93,32 +93,34 @@ CreateAutoDeploy(){
 	echo
 	echo "<- Create Auto Deploy";
 
-	git clone https://github.com/lorlev/ad2.git "$web_server_dir/$DOMAIN_NAME/auto.deploy"
+	if git clone https://github.com/lorlev/ad2.git "$web_server_dir/$DOMAIN_NAME/auto.deploy" > /dev/null 2>&1; then
+		cp "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env.example" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		## Clear spaces, tabs, empty lines & comments in config file
+		export $(sed "s/ *= */=/g; s/	//g; s/[#].*$//; /^$/d;" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env")
 
-	cp "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env.example" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-	## Clear spaces, tabs, empty lines & comments in config file
-	export $(sed "s/ *= */=/g; s/	//g; s/[#].*$//; /^$/d;" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env")
+		sed -i "s/PUSH[[:space:]]*=.*/PUSH\t\t\t= \"$PUSH\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= \"$push_url\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= \"$push_secret\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 
-	sed -i "s/PUSH[[:space:]]*=.*/PUSH\t\t\t= \"$PUSH\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-	sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= \"$push_url\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-	sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= \"$push_secret\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 
-	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
-	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+		mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
+		ssh-keygen -t rsa -f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" -N "" > /dev/null 2>&1
 
-	mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
-	ssh-keygen -t rsa -f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" -N "" > /dev/null 2>&1
+		CreateExecutionScript
 
-	CreateExecutionScript
+		chmod -R 750 "$web_server_dir/$DOMAIN_NAME/auto.deploy"
+		chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/auto.deploy"
 
-	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+		chmod 400 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key"
+		chmod 775 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key.pub"
+		chmod 700 "$web_server_dir/$DOMAIN_NAME/auto.deploy/index.cgi"
 
-	chmod -R 750 "$web_server_dir/$DOMAIN_NAME/auto.deploy"
-	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/auto.deploy"
-
-	chmod 400 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key"
-	chmod 775 "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key.pub"
-	chmod 700 "$web_server_dir/$DOMAIN_NAME/auto.deploy/index.cgi"
+		echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+	else
+		echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
+	fi
 }
 
 CreateUnderConstructionPage(){
@@ -220,12 +222,13 @@ AddBashLogger(){
 	echo
 	echo "<- Create Bash logger"
 
-	git clone https://github.com/lorlev/bash.logger.git "$web_server_dir/$DOMAIN_NAME/log.viewer"
-
-	chmod -R 775 "$web_server_dir/$DOMAIN_NAME/log.viewer"
-	chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/log.viewer"
-
-	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+	if git clone https://github.com/lorlev/bash.logger.git "$web_server_dir/$DOMAIN_NAME/log.viewer" > /dev/null 2>&1; then
+		chmod -R 775 "$web_server_dir/$DOMAIN_NAME/log.viewer"
+		chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/log.viewer"
+		echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+	else
+		echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
+	fi
 }
 
 NginxAccessStructure(){
