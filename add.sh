@@ -261,12 +261,11 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 			ExecuteScript
 
 			umask 0022
-			echo
-			echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+			echo "-> $(tput setaf 2)Clone Git Repository Ok$(tput sgr 0)"
 			echo
 		else
 			echo
-			echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
+			echo "-> $(tput setaf 1)Clone Git Repository Fail$(tput sgr 0)"
 			echo "Reason for failure: $(tput setaf 1)"
 			cat $ERROR_FILE
 			echo "$(tput sgr 0)"
