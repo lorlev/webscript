@@ -42,7 +42,7 @@ NGINX_TECH_LOCATION=$(cat <<EOF
 		}
 
 		fastcgi_index             index.php;
-		fastcgi_pass              unix:/run/php/php-fpm-\$$USER_NAME.sock;
+		fastcgi_pass              unix:/run/php/php-fpm-\$USER_NAME.sock;
 		fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
 		include                   fastcgi_params;
 	}\n
@@ -57,7 +57,7 @@ NGINX_TECT_STATUS=$(cat <<EOF
 		deny                      all;
 		access_log                off;
 
-		fastcgi_pass              unix:/run/php/php-fpm-\$$USER_NAME.sock;
+		fastcgi_pass              unix:/run/php/php-fpm-\$USER_NAME.sock;
 		fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
 		include                   fastcgi_params;
 	}\n

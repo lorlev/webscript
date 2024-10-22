@@ -238,24 +238,37 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 			CHECKOUT_BRANCH='y'
 		fi
 
-		ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/htdocs"
+		echo
+		echo "<- Start Cloning Repository"
 
-		cd "$web_server_dir/$DOMAIN_NAME/htdocs"
+		ERROR_FILE=$(mktemp)
 
-		git config core.filemode false
+		if ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key > /dev/null 2>>$ERROR_FILE; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/htdocs > /dev/null 2>>$ERROR_FILE"; then
+			cd "$web_server_dir/$DOMAIN_NAME/htdocs"
 
-		if [ "$CHECKOUT_BRANCH" == "Y" -o "$CHECKOUT_BRANCH" == "y" ]; then
-			git checkout -b $GIT_BRANCH "origin/$GIT_BRANCH"
+			git config core.filemode false
+
+			if [ "$CHECKOUT_BRANCH" == "Y" -o "$CHECKOUT_BRANCH" == "y" ]; then
+				git checkout -b $GIT_BRANCH "origin/$GIT_BRANCH"
+			fi
+
+			ExecuteScript
+
+			umask 0022
+			echo
+			echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+			echo
+		else
+			echo
+			echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
+			echo "Reason for failure: $(tput setaf 1)"
+			cat $ERROR_FILE
+			echo "$(tput sgr 0)"
+			echo
 		fi
 
-		ExecuteScript
-
-		umask 0022
+		rm -f $ERROR_FILE
 	fi
-
-	echo
-	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
-	echo
 fi
 
 chown -R $USER_NAME:$global_group "$web_server_dir/$DOMAIN_NAME/htdocs"
