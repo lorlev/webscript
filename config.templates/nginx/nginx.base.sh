@@ -46,6 +46,8 @@ $NGINX_TECT_STATUS
 		access_log                off;
 		log_not_found             off;
 		expires                   max;
+		expires 30d;
+		add_header Cache-Control "public, no-transform";
 	}
 
 	location ~ /\. {
@@ -54,7 +56,7 @@ $NGINX_TECT_STATUS
 		deny                      all;
 	}
 
-	location ~* \.(ht|svn|git|hg|bzr|sh|sql)$ {
+	location ~* \.(ht|svn|git|hg|bzr|sh|sql|env)$ {
 		deny                      all;
 	}
 
