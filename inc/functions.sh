@@ -106,6 +106,7 @@ CreateAutoDeploy(){
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 
+	mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
 	ssh-keygen -t rsa -f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" -N "" > /dev/null 2>&1
 
 	CreateExecutionScript

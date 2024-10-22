@@ -238,8 +238,6 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 			CHECKOUT_BRANCH='y'
 		fi
 
-		mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
-
 		ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/htdocs"
 
 		cd "$web_server_dir/$DOMAIN_NAME/htdocs"
