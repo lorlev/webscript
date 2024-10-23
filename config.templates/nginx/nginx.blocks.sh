@@ -179,8 +179,9 @@ if [ "$bash_logger" == "Y" -o "$bash_logger" == "y" ]; then
 		}
 
 		location ~ \.cgi$ {
+			try_files                 \$uri = 404;
 			include                   fastcgi_params;
-			fastcgi_param             SCRIPT_FILENAME $document_root$fastcgi_script_name;
+			fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
 			fastcgi_pass              unix:/var/run/fcgiwrap.socket;
 		}
 	}\n
