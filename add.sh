@@ -198,6 +198,7 @@ CreateConfig
 
 if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 	SyncToBitbucketIPRange
+	SyncToGitHubIPRange
 fi
 
 echo

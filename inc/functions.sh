@@ -204,7 +204,7 @@ SyncToBitbucketIPRange(){
 	else
 		BITBUCKET_IP_LIST=$(echo $IP_DATA | jq -r '.items')
 
-		#Clear Old records
+		# Clear old records and add new ones in the correct format
 		echo -e "#Bitbucket IP Range\n" > "$local_path/config.templates/nginx/access/bitbucket.access.conf"
 		for row in $(echo "${BITBUCKET_IP_LIST}" | jq -r '.[] | @base64'); do
 			_jq() {
@@ -212,6 +212,30 @@ SyncToBitbucketIPRange(){
 			}
 
 			echo "allow	$(_jq '.cidr');" >> "$local_path/config.templates/nginx/access/bitbucket.access.conf"
+		done
+
+		echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+	fi
+}
+
+SyncToGitHubIPRange(){
+	echo
+	echo "<- Sync to GitHub IP Range";
+
+	IP_DATA=$(curl -s https://api.github.com/meta)
+
+	if [ "$IP_DATA" == "" ]; then
+		echo
+		echo "$(tput setaf 1) Error: Cannot connect to host: https://api.github.com/meta $(tput sgr 0)"
+		echo "$(tput setaf 1) Error: github.access.conf IP list is out of date!!! $(tput sgr 0)"
+	else
+		GITHUB_IP_LIST=$(echo $IP_DATA | jq -r '.hooks[]')
+
+		# Clear old records and add new ones in the correct format
+		echo -e "# GitHub IP Range\n" > "$local_path/config.templates/nginx/access/github.access.conf"
+		for ip in ${GITHUB_IP_LIST[@]}; do
+			# Append properly formatted IPs without any extra characters
+			echo "allow $ip;" >> "$local_path/config.templates/nginx/access/github.access.conf"
 		done
 
 		echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
@@ -249,6 +273,10 @@ NginxAccessStructure(){
 	fi
 
 	if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
+		if [ -f "/etc/nginx/access/github.access.conf" ]; then
+			rm "/etc/nginx/access/github.access.conf"
+		fi
+
 		if [ -f "/etc/nginx/access/bitbucket.access.conf" ]; then
 			rm "/etc/nginx/access/bitbucket.access.conf"
 		fi
@@ -257,6 +285,7 @@ NginxAccessStructure(){
 			rm "/etc/nginx/access/gitlab.access.conf"
 		fi
 
+		cp "$local_path/config.templates/nginx/access/github.access.conf" "/etc/nginx/access/github.access.conf"
 		cp "$local_path/config.templates/nginx/access/bitbucket.access.conf" "/etc/nginx/access/bitbucket.access.conf"
 		cp "$local_path/config.templates/nginx/access/gitlab.access.conf" "/etc/nginx/access/gitlab.access.conf"
 	fi

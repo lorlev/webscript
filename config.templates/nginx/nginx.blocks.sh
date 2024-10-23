@@ -133,6 +133,7 @@ if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 
 	location ^~ /auto.deploy {
 		include                   /etc/nginx/access/services.access.conf;
+		include                   /etc/nginx/access/github.access.conf;
 		include                   /etc/nginx/access/bitbucket.access.conf;
 		include                   /etc/nginx/access/gitlab.access.conf;
 		deny                      all;
