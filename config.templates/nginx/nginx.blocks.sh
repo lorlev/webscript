@@ -131,7 +131,8 @@ if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 	####
 	NGINX_AUTO_DEPLOY=$(cat <<EOF
 
-	location ^~ /auto.deploy {
+
+	location = /auto.deploy {
 		include                   /etc/nginx/access/services.access.conf;
 		include                   /etc/nginx/access/github.access.conf;
 		include                   /etc/nginx/access/bitbucket.access.conf;
@@ -139,18 +140,19 @@ if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 		deny                      all;
 		access_log                off;
 
-		index                     index.cgi;
-		root                      $web_server_dir/$DOMAIN_NAME;
 		gzip                      off;
 		auth_basic                off;
 
-		location ~ \.cgi$ {
-			try_files                 \$uri = 404;
-			include                   fastcgi_params;
+		# Define the root directory
+		root                      $web_server_dir/$DOMAIN_NAME;
 
-			fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-			fastcgi_pass              unix:/var/run/fcgiwrap.socket;
-		}
+		# Serve the index.cgi script directly without redirecting
+		try_files                 /auto.deploy/index.cgi =404;
+
+		# FastCGI configuration to process the CGI script
+		include                   fastcgi_params;
+		fastcgi_param             SCRIPT_FILENAME \$document_root/auto.deploy/index.cgi;
+		fastcgi_pass              unix:/var/run/fcgiwrap.socket;
 	}\n
 
 EOF
