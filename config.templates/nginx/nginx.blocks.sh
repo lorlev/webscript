@@ -131,7 +131,6 @@ if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 	####
 	NGINX_AUTO_DEPLOY=$(cat <<EOF
 
-
 	location = /auto.deploy {
 		include                   /etc/nginx/access/services.access.conf;
 		include                   /etc/nginx/access/github.access.conf;
@@ -170,21 +169,18 @@ if [ "$bash_logger" == "Y" -o "$bash_logger" == "y" ]; then
 		deny                      all;
 		access_log                off;
 
-		index                     index.cgi;
 		root                      $web_server_dir/$DOMAIN_NAME;
 		gzip                      off;
 		auth_basic                off;
 
-		try_files                 \$uri \$uri/ /log.viewer/index.cgi?\$args;
+		try_files                 \$uri /log.viewer/index.cgi?\$args;
 		if (!-e \$request_filename){
 			rewrite                   ^/(.*)$ /log.viewer/index.cgi?url=\$1 last;
 		}
 
 		location ~ \.cgi$ {
-			try_files                 \$uri = 404;
 			include                   fastcgi_params;
-
-			fastcgi_param             SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+			fastcgi_param             SCRIPT_FILENAME $document_root$fastcgi_script_name;
 			fastcgi_pass              unix:/var/run/fcgiwrap.socket;
 		}
 	}\n
