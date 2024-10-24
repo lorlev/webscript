@@ -55,9 +55,11 @@ PrepeareUserDirs(){
 	rm "$web_server_dir/$DOMAIN_NAME/.bash_profile" -f
 	rm "$web_server_dir/$DOMAIN_NAME/.bashrc" -f
 	rm "$web_server_dir/$DOMAIN_NAME/.cloud-locale-test.skip" -f
+	rm "$web_server_dir/$DOMAIN_NAME/.profile" -f
 
 	echo "<- Directory create";
-	mkdir "$web_server_dir/$DOMAIN_NAME/htdocs"
+	mkdir "$web_server_dir/$DOMAIN_NAME/builds"
+	mkdir "$web_server_dir/$DOMAIN_NAME/static"
 	mkdir "$web_server_dir/$DOMAIN_NAME/server.logs"
 
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
@@ -65,7 +67,8 @@ PrepeareUserDirs(){
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/nginx.access.log"
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/nginx.error.log"
 
-	chmod 775 "$web_server_dir/$DOMAIN_NAME/htdocs"
+	chmod 775 "$web_server_dir/$DOMAIN_NAME/builds"
+	chmod 775 "$web_server_dir/$DOMAIN_NAME/static"
 	chmod -R 775 "$web_server_dir/$DOMAIN_NAME/server.logs"
 }
 
@@ -104,9 +107,13 @@ CreateAutoDeploy(){
 
 		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+		chmod -R 775 "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 
 		mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
-		ssh-keygen -t rsa -f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" -N "" > /dev/null 2>&1
+		ssh-keygen -t rsa \
+			-C "$(hostname)" \
+			-f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" \
+			-N "" > /dev/null 2>&1
 
 		CreateExecutionScript
 
@@ -126,6 +133,11 @@ CreateAutoDeploy(){
 CreateUnderConstructionPage(){
 	echo
 	echo "<- Create Under Construction Page"
+
+	rm -r "$web_server_dir/$DOMAIN_NAME/builds"
+	rm -r "$web_server_dir/$DOMAIN_NAME/static"
+	mkdir "$web_server_dir/$DOMAIN_NAME/htdocs"
+	chmod 775 "$web_server_dir/$DOMAIN_NAME/htdocs"
 
 	sed "s/{domain}/$DOMAIN_NAME/g; " "$local_path/page.templates/index.html" > "$web_server_dir/$DOMAIN_NAME/htdocs/index.html"
 	chmod 775 "$web_server_dir/$DOMAIN_NAME/htdocs/index.html"

@@ -83,7 +83,6 @@ CreateConfig(){
 		PROJECT=${DOMAIN_NAME//test./}
 	fi
 
-	echo
 	echo "<- Create PHP-FPM Config file"
 	sed "s/{domain}/$DOMAIN_NAME/g; s/{project_name}/$PROJECT/g; s/{branch}/$GIT_BRANCH/g; s/{port}/$fpm_port/g; s/{user}/$USER_NAME/g; s/{group}/$global_group/g; s|{web_server_dir}|$web_server_dir|g" config.templates/php/fpm.conf > "$php_fpm_pool_location/$DOMAIN_NAME.conf"
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
@@ -125,4 +124,3 @@ RestartService(){
 GetServiceSummary(){
 	echo "-> PHP-FPM Port is: $fpm_port"
 }
-

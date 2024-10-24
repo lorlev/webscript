@@ -55,7 +55,6 @@ CreateConfig(){
 	# Increment port
 	sed -i "s/^fpm_port=[^ ]*/fpm_port=$((fpm_port+1))/" "$local_path/tmp/max_fpm_port.ini"
 
-	echo
 	echo "<- Create PHP-FPM Config file"
 	sed "s/{domain}/$DOMAIN_NAME/g; s/{port}/$fpm_port/g; s/{user}/$USER_NAME/g; s/{group}/$global_group/g; s|{web_server_dir}|$web_server_dir|g" config.templates/php/fpm.conf > "$php_fpm_pool_location/$DOMAIN_NAME.conf"
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"

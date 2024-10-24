@@ -246,33 +246,67 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 
 		ERROR_FILE=$(mktemp)
 
-		if ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key > /dev/null 2>>$ERROR_FILE; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/htdocs > /dev/null 2>>$ERROR_FILE"; then
-			cd "$web_server_dir/$DOMAIN_NAME/htdocs"
-
-			git config core.filemode false
-
-			if [ "$CHECKOUT_BRANCH" == "Y" -o "$CHECKOUT_BRANCH" == "y" ]; then
-				echo "<- Switched to a new branch: $GIT_BRANCH"
-
-				if git checkout -b $GIT_BRANCH "origin/$GIT_BRANCH" > /dev/null 2>&1; then
-					echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
-				else
-					echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
-				fi
-			fi
-
-			ExecuteScript
-
-			umask 0022
-			echo "-> Clone Git Repository $(tput setaf 2)Ok$(tput sgr 0)"
-			echo
+		# Get the latest commit hash
+		if [ "$CHECKOUT_BRANCH" == "Y" ] || [ "$CHECKOUT_BRANCH" == "y" ]; then
+			LATEST_COMMIT_HASH=$(ssh-agent sh -c "
+				ssh-add '$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key' > /dev/null 2>>'$ERROR_FILE'
+				git ls-remote '$GIT_REPO_URL' '$GIT_BRANCH' 2>>'$ERROR_FILE'
+			" | awk '{ print $1 }')
 		else
+			LATEST_COMMIT_HASH=$(ssh-agent sh -c "
+				ssh-add '$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key' > /dev/null 2>>'$ERROR_FILE'
+				git ls-remote '$GIT_REPO_URL' HEAD 2>>'$ERROR_FILE'
+			" | awk '{ print $1 }')
+		fi
+
+		if [ -z "$LATEST_COMMIT_HASH" ]; then
 			echo
-			echo "-> Clone Git Repository $(tput setaf 1)Fail$(tput sgr 0)"
+			echo "-> Unable to retrieve the latest commit hash. $(tput setaf 1)Fail$(tput sgr 0)"
 			echo "Reason for failure: $(tput setaf 1)"
-			cat $ERROR_FILE
+			cat "$ERROR_FILE"
 			echo "$(tput sgr 0)"
 			echo
+		else
+			mkdir "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH"
+			if ssh-agent sh -c "ssh-add $web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key > /dev/null 2>>$ERROR_FILE; git clone $GIT_REPO_URL $web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH > /dev/null 2>>$ERROR_FILE"; then
+				cd "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH"
+
+				git config core.filemode false
+
+				if [ "$CHECKOUT_BRANCH" == "Y" -o "$CHECKOUT_BRANCH" == "y" ]; then
+					echo "<- Switched to a new branch: $GIT_BRANCH"
+
+					if git checkout -b $GIT_BRANCH "origin/$GIT_BRANCH" > /dev/null 2>&1; then
+						echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
+					else
+						echo "-> $(tput setaf 1)Fail$(tput sgr 0)"
+					fi
+				fi
+
+				chown -R $USER_NAME:$global_group "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH"
+				ln -s "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH" "$web_server_dir/$DOMAIN_NAME/htdocs"
+
+				if [ -n "$static_dirs" ]; then
+					for dir in $static_dirs; do
+						mkdir "$web_server_dir/$DOMAIN_NAME/static/$dir"
+						ln -s "$web_server_dir/$DOMAIN_NAME/static/$dir" "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH/$dir"
+					done
+				fi
+
+				ExecuteScript
+
+				umask 0022
+				echo "-> Clone Git Repository $(tput setaf 2)Ok$(tput sgr 0)"
+				echo "Git Hash: $LATEST_COMMIT_HASH"
+				echo
+			else
+				echo
+				echo "-> Clone Git Repository $(tput setaf 1)Fail$(tput sgr 0)"
+				echo "Reason for failure: $(tput setaf 1)"
+				cat $ERROR_FILE
+				echo "$(tput sgr 0)"
+				echo
+			fi
 		fi
 
 		rm -f $ERROR_FILE
