@@ -288,7 +288,7 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 
 				if [ -n "$static_dirs" ]; then
 					for dir in $static_dirs; do
-						mkdir "$web_server_dir/$DOMAIN_NAME/static/$dir"
+						mkdir -p "$web_server_dir/$DOMAIN_NAME/static/$dir"
 						ln -s "$web_server_dir/$DOMAIN_NAME/static/$dir" "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH/$dir"
 					done
 				fi
