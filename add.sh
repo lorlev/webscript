@@ -51,7 +51,6 @@ case "$CHOOSE_TECHNOLOGY" in
 	"2") TECHNOLOGY="python";;
 	"q"|"Q") Finish;;
 esac
-echo
 
 #Inclide Choosed Technology
 source "$local_path/inc/install_$TECHNOLOGY.sh"
