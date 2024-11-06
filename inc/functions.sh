@@ -49,7 +49,7 @@ CreateUser(){
 
 PrepeareUserDirs(){
 	chown root:$global_group "$web_server_dir/$DOMAIN_NAME"
-	chmod 755 "$web_server_dir/$DOMAIN_NAME"
+	chmod 775 "$web_server_dir/$DOMAIN_NAME"
 
 	rm "$web_server_dir/$DOMAIN_NAME/.bash_logout" -f
 	rm "$web_server_dir/$DOMAIN_NAME/.bash_profile" -f
@@ -101,10 +101,14 @@ CreateAutoDeploy(){
 		## Clear spaces, tabs, empty lines & comments in config file
 		export $(sed "s/ *= */=/g; s/	//g; s/[#].*$//; /^$/d;" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env")
 
-		sed -i "s/PUSH[[:space:]]*=.*/PUSH\t\t\t= \"$PUSH\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-		sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= \"$push_url\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-		sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= \"$push_secret\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-		sed -i "s/STATIC_DIRS[[:space:]]*=.*/STATIC_DIRS\t\t= \"$static_dirs\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		if [ "$PUSH" == "Y" -o "$PUSH" == "y" ]; then
+			sed -i "s/PUSH[[:space:]]*=.*/PUSH\t\t\t= $PUSH/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+			sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= \"$push_url\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+			sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= \"$push_secret\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		fi
+
+		formatted_static_dirs=$(echo "$static_dirs" | sed 's/ /,/g')
+		sed -i "s/STATIC_DIRS[[:space:]]*=.*/STATIC_DIRS\t\t= $formatted_static_dirs/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 
 		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"

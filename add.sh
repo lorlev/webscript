@@ -42,7 +42,6 @@ echo
 echo "Choose Technology:"
 echo "(1) Nginx + PHP-FPM"
 echo "(2) Nginx + Python + Gunicorn"
-echo "(3) Nginx + PHP-FPM + React"
 
 read -e -p "(Q) Quit? (Default: 1) " CHOOSE_TECHNOLOGY
 CHOOSE_TECHNOLOGY=${CHOOSE_TECHNOLOGY:-1}
@@ -50,7 +49,6 @@ CHOOSE_TECHNOLOGY=${CHOOSE_TECHNOLOGY:-1}
 case "$CHOOSE_TECHNOLOGY" in
 	"1") TECHNOLOGY="php";;
 	"2") TECHNOLOGY="python";;
-	"3") TECHNOLOGY="react";;
 	"q"|"Q") Finish;;
 esac
 echo
@@ -165,7 +163,8 @@ if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 		GIT_REPO_URL="$debug_git_repo"
 	else
 		read -e -p "Has Git? (Y/n) (default n): " HAS_GIT
-		if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
+		HAS_GIT=${HAS_GIT:-n}  # Set default to 'n' if input is empty
+		if [ "$HAS_GIT" == "Y" ] || [ "$HAS_GIT" == "y" ]; then
 			echo
 			read -e -p "Please enter Git Repository SSH URL (*): " GIT_REPO_URL
 			echo
@@ -283,21 +282,21 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 					fi
 				fi
 
-				chown -R $USER_NAME:$global_group "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH"
 				ln -s "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH" "$web_server_dir/$DOMAIN_NAME/htdocs"
+				chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/builds"
 
 				if [ -n "$static_dirs" ]; then
 					for dir in $static_dirs; do
 						mkdir -p "$web_server_dir/$DOMAIN_NAME/static/$dir"
 						ln -s "$web_server_dir/$DOMAIN_NAME/static/$dir" "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH/$dir"
 					done
+					chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/static"
 				fi
 
 				ExecuteScript
 
 				umask 0022
 				echo "-> Clone Git Repository $(tput setaf 2)Ok$(tput sgr 0)"
-				echo "Git Hash: $LATEST_COMMIT_HASH"
 				echo
 			else
 				echo
@@ -313,7 +312,7 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 	fi
 fi
 
-chown -R $USER_NAME:$global_group "$web_server_dir/$DOMAIN_NAME/htdocs"
+chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/htdocs"
 
 if [ "$IS_SSL" == "Y" -o "$IS_SSL" == "y" ]; then
 	if [ ! -d "$certificate_location" ]; then
