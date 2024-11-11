@@ -42,7 +42,7 @@ CreateUser(){
 	echo
 
 	echo "<- Add user password"
-	echo -e "$USER_PASSWORD\n$USER_PASSWORD" | (passwd --stdin $USER_NAME) &> /dev/null
+	echo "$USER_NAME:$USER_PASSWORD" | chpasswd &> /dev/null
 	echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
 	echo
 }
@@ -116,7 +116,7 @@ CreateAutoDeploy(){
 
 		mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
 		ssh-keygen -t rsa \
-			-C "$(hostname)" \
+			-C "$(hostname)-$USER_NAME" \
 			-f "$web_server_dir/$DOMAIN_NAME/auto.deploy/access/access-key" \
 			-N "" > /dev/null 2>&1
 

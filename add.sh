@@ -281,13 +281,14 @@ if [ "$HAS_GIT" == "Y" -o "$HAS_GIT" == "y" ]; then
 					fi
 				fi
 
-				ln -s "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH" "$web_server_dir/$DOMAIN_NAME/htdocs"
+				cd "$web_server_dir/$DOMAIN_NAME"
+				ln -s "builds/$LATEST_COMMIT_HASH" "$web_server_dir/$DOMAIN_NAME/htdocs" || OutputLog "Failed to create symlink"
 				chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/builds"
 
 				if [ -n "$static_dirs" ]; then
 					for dir in $static_dirs; do
 						mkdir -p "$web_server_dir/$DOMAIN_NAME/static/$dir"
-						ln -s "$web_server_dir/$DOMAIN_NAME/static/$dir" "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH/$dir"
+						ln -s "../../static/$dir" "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH/$dir"
 						chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/builds/$LATEST_COMMIT_HASH/$dir"
 					done
 
