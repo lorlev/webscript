@@ -97,6 +97,8 @@ CreateAutoDeploy(){
 	echo "<- Create Auto Deploy";
 
 	if git clone https://github.com/lorlev/ad2.git "$web_server_dir/$DOMAIN_NAME/auto.deploy" > /dev/null 2>&1; then
+		git -C "$web_server_dir/$DOMAIN_NAME/auto.deploy" config core.filemode false
+
 		cp "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env.example" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 		## Clear spaces, tabs, empty lines & comments in config file
 		export $(sed "s/ *= */=/g; s/	//g; s/[#].*$//; /^$/d;" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env")
@@ -264,6 +266,8 @@ AddBashLogger(){
 	echo "<- Create Bash logger"
 
 	if git clone https://github.com/lorlev/bash.logger.git "$web_server_dir/$DOMAIN_NAME/log.viewer" > /dev/null 2>&1; then
+		git -C "$web_server_dir/$DOMAIN_NAME/log.viewer" config core.filemode false
+
 		chmod -R 775 "$web_server_dir/$DOMAIN_NAME/log.viewer"
 		chown -R www-data:$global_group "$web_server_dir/$DOMAIN_NAME/log.viewer"
 		echo "-> $(tput setaf 2)Ok$(tput sgr 0)"
