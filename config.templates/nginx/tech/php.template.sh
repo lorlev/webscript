@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$COMPOSER" == "Y" -o "$COMPOSER" == "y" ]; then
+if [ "$RUN_COMPOSER" == "Y" -o "$RUN_COMPOSER" == "y" ]; then
 	TECH_MAIN_ROOT_DIR=$(cat <<EOF
 	root                      $web_server_dir/$DOMAIN_NAME/htdocs/public;
 EOF

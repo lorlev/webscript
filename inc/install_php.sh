@@ -4,13 +4,13 @@ AskServiceRequirements(){
 	if [ "$AUTO_DEPLOY" == "Y" -o "$AUTO_DEPLOY" == "y" ]; then
 		#Composer
 		if [ "$composer_build" == "Y" -o "$composer_build" == "y" ]; then
-			read -e -p "Is Composer? (Y/n) (default y): " COMPOSER
-			if [ -z "$COMPOSER" ]; then
-				COMPOSER='y'
+			read -e -p "Is Composer? (Y/n) (default y): " RUN_COMPOSER
+			if [ -z "$RUN_COMPOSER" ]; then
+				RUN_COMPOSER='y'
 			fi
 			echo
 		else
-			COMPOSER='n'
+			RUN_COMPOSER='n'
 		fi
 	fi
 }
@@ -20,7 +20,7 @@ CreateLogs(){
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/php.slow.log"
 	echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/php.access.log"
 
-	if [ "$COMPOSER" == "Y" -o "$COMPOSER" == "y" ]; then
+	if [ "$RUN_COMPOSER" == "Y" -o "$RUN_COMPOSER" == "y" ]; then
 		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/composer.output.log"
 		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/artisan.output.log"
 	fi
@@ -29,7 +29,7 @@ CreateLogs(){
 	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/php.slow.log"
 	chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/php.access.log"
 
-	if [ "$COMPOSER" == "Y" -o "$COMPOSER" == "y" ]; then
+	if [ "$RUN_COMPOSER" == "Y" -o "$RUN_COMPOSER" == "y" ]; then
 		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/composer.output.log"
 		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/artisan.output.log"
 	fi
@@ -61,7 +61,7 @@ CreateDirs(){
 }
 
 CreateExecutionScript(){
-	sed -i "s/COMPOSER[[:space:]]*=.*/COMPOSER\t\t= $COMPOSER/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	sed -i "s/RUN_COMPOSER[[:space:]]*=.*/RUN_COMPOSER\t\t= $RUN_COMPOSER/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 	sed -i "s/TECH[[:space:]]*=.*/TECH\t\t\t= $TECHNOLOGY/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 }
 
@@ -89,7 +89,7 @@ CreateConfig(){
 }
 
 ExecuteScript(){
-	if [ "$COMPOSER" == "Y" -o "$COMPOSER" == "y" ]; then
+	if [ "$RUN_COMPOSER" == "Y" -o "$RUN_COMPOSER" == "y" ]; then
 		if [ -f "$web_server_dir/$DOMAIN_NAME/htdocs/composer.json" ]; then
 			echo
 			echo "Composer install"

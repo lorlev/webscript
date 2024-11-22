@@ -105,8 +105,8 @@ CreateAutoDeploy(){
 
 		if [ "$PUSH" == "Y" -o "$PUSH" == "y" ]; then
 			sed -i "s/PUSH[[:space:]]*=.*/PUSH\t\t\t= $PUSH/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-			sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= \"$push_url\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
-			sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= \"$push_secret\"/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+			sed -i "s/PUSH_URL[[:space:]]*=.*/PUSH_URL\t\t= ${push_url:+\"$push_url\"}/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+			sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= ${push_secret:+\"$push_secret\"}/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 		fi
 
 		formatted_static_dirs=$(echo "$static_dirs" | sed 's/ /,/g')

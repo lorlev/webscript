@@ -32,7 +32,7 @@ CreateDirs(){
 }
 
 CreateExecutionScript(){
-	sed -i "s/GUNICORN[[:space:]]*=.*/GUNICORN\t\t= $GUNICORN/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+	sed -i "s/RUN_GUNICORN[[:space:]]*=.*/RUN_GUNICORN\t\t= $RUN_GUNICORN/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 	sed -i "s/TECH[[:space:]]*=.*/TECH\t\t\t= $TECHNOLOGY/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 }
 
