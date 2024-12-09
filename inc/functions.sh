@@ -109,8 +109,7 @@ CreateAutoDeploy(){
 			sed -i "s/PUSH_SECRET[[:space:]]*=.*/PUSH_SECRET\t\t= ${push_secret:+\"$push_secret\"}/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 		fi
 
-		formatted_static_dirs=$(echo "$static_dirs" | sed 's/ /,/g')
-		sed -i "s/STATIC_DIRS[[:space:]]*=.*/STATIC_DIRS\t\t= $formatted_static_dirs/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
+		sed -i "s/STATIC_DIRS[[:space:]]*=.*/STATIC_DIRS\t\t= $static_dirs/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 
 		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
 		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
