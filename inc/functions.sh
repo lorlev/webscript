@@ -28,7 +28,7 @@ SelfUpdate(){
 
 CreateUser(){
 	echo "<- Add user: $USER_NAME"
-	useradd -m -g $global_group -s /usr/sbin/nologin -d "$web_server_dir/$DOMAIN_NAME" "$USER_NAME"
+	useradd -m -g $global_group -s /bin/ftponly -d "$web_server_dir/$DOMAIN_NAME" "$USER_NAME"
 
 	# Does User exist?
 	id $USER_NAME &> /dev/null
