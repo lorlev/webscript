@@ -112,8 +112,13 @@ CreateAutoDeploy(){
 		sed -i "s/STATIC_DIRS[[:space:]]*=.*/STATIC_DIRS\t\t= $static_dirs/" "$web_server_dir/$DOMAIN_NAME/auto.deploy/.env"
 
 		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+		echo "" > "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.background.log"
+
 		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+		chown www-data:$global_group "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.background.log"
+
 		chmod -R 775 "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.log"
+		chmod -R 775 "$web_server_dir/$DOMAIN_NAME/server.logs/auto.deploy.background.log"
 
 		mkdir "$web_server_dir/$DOMAIN_NAME/auto.deploy/access"
 		ssh-keygen -t rsa \
